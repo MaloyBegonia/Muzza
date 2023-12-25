@@ -19,7 +19,6 @@ if (isFullBuild && System.getenv("PULL_REQUEST") == null) {
 android {
     namespace = "com.maloy.muzza"
     compileSdk = 33
-    buildToolsVersion = "30.0.3"
     defaultConfig {
         applicationId = "com.maloy.muzza"
         minSdk = 24
