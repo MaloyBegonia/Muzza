@@ -56,6 +56,7 @@ fun MiniPlayer(
     val error by playerConnection.error.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val canSkipNext by playerConnection.canSkipNext.collectAsState()
+    val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
 
     Box(
         modifier = modifier
@@ -84,6 +85,16 @@ fun MiniPlayer(
                         modifier = Modifier.padding(horizontal = 6.dp)
                     )
                 }
+            }
+
+            IconButton(
+                enabled = canSkipPrevious,
+                onClick = playerConnection.player::seekToPrevious
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.skip_previous),
+                    contentDescription = null
+                )
             }
 
             IconButton(
