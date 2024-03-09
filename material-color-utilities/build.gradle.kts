@@ -3,10 +3,10 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
-    compileOnly("com.google.errorprone:error_prone_core:2.16")
+    compileOnly("com.google.errorprone:error_prone_core:2.25.0")
 }
