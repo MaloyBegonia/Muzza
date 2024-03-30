@@ -147,10 +147,10 @@ fun AboutScreen(
             }
 
             IconButton(
-                onClick = { uriHandler.openUri("https://yoomoney.ru/bill/pay/1110NN64476.240221") }
+                onClick = { uriHandler.openUri("https://www.tinkoff.ru/cf/4xwhg7twXkh") }
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.yoomoney),
+                    painter = painterResource(R.drawable.tinkoff),
                     contentDescription = null
                 )
             }

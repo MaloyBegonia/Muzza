@@ -18,13 +18,13 @@ if (isFullBuild && System.getenv("PULL_REQUEST") == null) {
 
 android {
     namespace = "com.maloy.muzza"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         applicationId = "com.maloy.muzza"
         minSdk = 24
         targetSdk = 33
         versionCode = 19
-        versionName = "0.5.4"
+        versionName = "0.5.5"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -58,6 +58,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()

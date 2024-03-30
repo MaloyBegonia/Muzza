@@ -285,4 +285,7 @@
     <string name="new_version_available">Доступна новая версия</string>
     <string name="translation_models">Модели перевода</string>
     <string name="clear_translation_models">Очистить модели перевода</string>
+    <string name="remove_download_playlist_confirm">Вы действительно хотите удалить все песни из списка воспроизведения \"%s\" из хранилища загруженных песен?</string>
+    <string name="delete_playlist_confirm">Вы действительно хотите удалить плейлист  \"%s\"?</string>
+    <string name="appwidget_text">Я котик:)</string>
 </resources>

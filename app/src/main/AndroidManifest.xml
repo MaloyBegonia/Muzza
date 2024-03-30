@@ -14,6 +14,7 @@
             <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL" />
         </intent>
     </queries>
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -24,6 +25,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Muzza"
         tools:targetApi="o">
+        <receiver
+            android:name=".widget.Test"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/test_info" />
+        </receiver>
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
@@ -70,7 +83,6 @@
                 <!-- playlist prefix -->
                 <data android:pathPrefix="/playlist" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
@@ -105,7 +117,8 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
 
-            <meta-data android:name="android.app.shortcuts"
+            <meta-data
+                android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
 
@@ -130,12 +143,12 @@
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
-
         <service
             android:name=".playback.ExoDownloadService"
             android:exported="false">
             <intent-filter>
                 <action android:name="androidx.media3.exoplayer.downloadService.action.RESTART" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>

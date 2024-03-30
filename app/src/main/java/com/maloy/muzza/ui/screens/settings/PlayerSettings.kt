@@ -65,7 +65,7 @@ fun PlayerSettings(
         )
         SwitchPreference(
             title = { Text(stringResource(R.string.skip_silence)) },
-            icon = { Icon(painterResource(R.drawable.skip_next), null) },
+            icon = { Icon(painterResource(R.drawable.skip_next_settings), null) },
             checked = skipSilence,
             onCheckedChange = onSkipSilenceChange
         )
