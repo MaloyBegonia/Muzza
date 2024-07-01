@@ -13,6 +13,7 @@ kotlin2 = "1.8.0"
 appcompat = "1.6.1"
 preference = "1.2.1"
 material = "1.4.0"
+runtimeAndroid = "1.6.8"
 
 [libraries]
 guava = { group = "com.google.guava", name = "guava", version = "31.0.1-android" }
@@ -93,6 +94,7 @@ mlkit-translate = { group = "com.google.mlkit", name = "translate", version = "1
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
 
 [plugins]
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

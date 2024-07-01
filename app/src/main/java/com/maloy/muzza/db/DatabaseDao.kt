@@ -1,4 +1,4 @@
-package com.maloy.muzza.db
+package  com.maloy.muzza.db
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -12,37 +12,37 @@ import androidx.room.Upsert
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.maloy.innertube.models.SongItem
 import com.maloy.innertube.pages.AlbumPage
-import com.maloy.innertube.pages.ArtistPage
-import com.maloy.muzza.constants.AlbumSortType
-import com.maloy.muzza.constants.ArtistSongSortType
-import com.maloy.muzza.constants.ArtistSortType
-import com.maloy.muzza.constants.PlaylistSortType
-import com.maloy.muzza.constants.SongSortType
-import com.maloy.muzza.db.entities.Album
-import com.maloy.muzza.db.entities.AlbumArtistMap
-import com.maloy.muzza.db.entities.AlbumEntity
-import com.maloy.muzza.db.entities.AlbumWithSongs
-import com.maloy.muzza.db.entities.Artist
-import com.maloy.muzza.db.entities.ArtistEntity
-import com.maloy.muzza.db.entities.Event
-import com.maloy.muzza.db.entities.EventWithSong
-import com.maloy.muzza.db.entities.FormatEntity
-import com.maloy.muzza.db.entities.LyricsEntity
-import com.maloy.muzza.db.entities.Playlist
-import com.maloy.muzza.db.entities.PlaylistEntity
-import com.maloy.muzza.db.entities.PlaylistSong
-import com.maloy.muzza.db.entities.PlaylistSongMap
-import com.maloy.muzza.db.entities.RelatedSongMap
-import com.maloy.muzza.db.entities.SearchHistory
-import com.maloy.muzza.db.entities.Song
-import com.maloy.muzza.db.entities.SongAlbumMap
-import com.maloy.muzza.db.entities.SongArtistMap
-import com.maloy.muzza.db.entities.SongEntity
-import com.maloy.muzza.extensions.reversed
-import com.maloy.muzza.extensions.toSQLiteQuery
-import com.maloy.muzza.models.MediaMetadata
-import com.maloy.muzza.models.toMediaMetadata
-import com.maloy.muzza.ui.utils.resize
+import  com.maloy.innertube.pages.ArtistPage
+import  com.maloy.muzza.constants.AlbumSortType
+import  com.maloy.muzza.constants.ArtistSongSortType
+import  com.maloy.muzza.constants.ArtistSortType
+import  com.maloy.muzza.constants.PlaylistSortType
+import  com.maloy.muzza.constants.SongSortType
+import  com.maloy.muzza.db.entities.Album
+import  com.maloy.muzza.db.entities.AlbumArtistMap
+import  com.maloy.muzza.db.entities.AlbumEntity
+import  com.maloy.muzza.db.entities.AlbumWithSongs
+import  com.maloy.muzza.db.entities.Artist
+import  com.maloy.muzza.db.entities.ArtistEntity
+import  com.maloy.muzza.db.entities.Event
+import  com.maloy.muzza.db.entities.EventWithSong
+import  com.maloy.muzza.db.entities.FormatEntity
+import  com.maloy.muzza.db.entities.LyricsEntity
+import  com.maloy.muzza.db.entities.Playlist
+import  com.maloy.muzza.db.entities.PlaylistEntity
+import  com.maloy.muzza.db.entities.PlaylistSong
+import  com.maloy.muzza.db.entities.PlaylistSongMap
+import  com.maloy.muzza.db.entities.RelatedSongMap
+import  com.maloy.muzza.db.entities.SearchHistory
+import  com.maloy.muzza.db.entities.Song
+import  com.maloy.muzza.db.entities.SongAlbumMap
+import  com.maloy.muzza.db.entities.SongArtistMap
+import  com.maloy.muzza.db.entities.SongEntity
+import  com.maloy.muzza.extensions.reversed
+import  com.maloy.muzza.extensions.toSQLiteQuery
+import  com.maloy.muzza.models.MediaMetadata
+import  com.maloy.muzza.models.toMediaMetadata
+import  com.maloy.muzza.ui.utils.resize
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
@@ -176,18 +176,88 @@ interface DatabaseDao {
 
     @Transaction
     @Query(
+"""
+                SELECT
+                    song.*
+                FROM
+                    (
+                        SELECT
+                            n.songId AS eid,
+                            SUM(playTime) AS oldPlayTime,
+                            newPlayTime
+                        FROM
+                            event
+                        JOIN
+                            (
+                              SELECT
+                                songId,
+                                SUM(playTime) AS newPlayTime
+                              FROM
+                                event
+                            WHERE
+                                timestamp > (:now - 86400000 * 30 * 1)
+                              GROUP BY
+                                songId
+                              ORDER BY
+                               newPlayTime
+                            ) as n
+                        ON event.songId = n.songId
+                        WHERE
+                            timestamp < (:now - 86400000 * 30 * 1)
+                        GROUP BY
+                            n.songId
+                        ORDER BY
+                            oldPlayTime
+                    ) AS t
+                JOIN song on song.id = t.eid
+                WHERE 0.2 * t.oldPlayTime > t.newPlayTime
+                LIMIT 100
+
         """
-        SELECT *
+    )
+    fun forgottenFavorites(now: Long = System.currentTimeMillis()) : Flow<List<Song>>
+
+    @Transaction
+    @Query(
+    """
+        SELECT
+            song.*
+        FROM
+            event
+        JOIN
+            song ON event.songId = song.id
+        WHERE
+            event.timestamp > (:now - 86400000 * 7 * 2)
+        GROUP BY
+            song.albumId
+        HAVING
+            song.albumId IS NOT NULL
+        ORDER BY
+            sum(event.playTime) DESC
+        LIMIT :limit
+        OFFSET :offset
+        
+        """
+    )
+    fun getRecommendationAlbum(now: Long = System.currentTimeMillis(), limit: Int = 5, offset: Int = 0) : Flow<List<Song>>
+
+    @Transaction
+    @Query(
+        """
+        SELECT song.*
         FROM song
-        WHERE id IN (SELECT songId
+        JOIN (SELECT songId
                      FROM event
                      WHERE timestamp > :fromTimeStamp
                      GROUP BY songId
                      ORDER BY SUM(playTime) DESC
                      LIMIT :limit)
+        ON song.id = songId
+        LIMIT :limit
+        OFFSET :offset
     """
     )
-    fun mostPlayedSongs(fromTimeStamp: Long, limit: Int = 6): Flow<List<Song>>
+    fun mostPlayedSongs(fromTimeStamp: Long, limit: Int = 6, offset: Int = 0): Flow<List<Song>>
 
     @Transaction
     @Query(
@@ -195,9 +265,9 @@ interface DatabaseDao {
         SELECT artist.*,
                (SELECT COUNT(1)
                 FROM song_artist_map
-                         JOIN song ON song_artist_map.songId = song.id
+                         JOIN event ON song_artist_map.songId = event.songId
                 WHERE artistId = artist.id
-                  AND song.inLibrary IS NOT NULL) AS songCount
+                  AND timestamp > :fromTimeStamp) AS songCount
         FROM artist
                  JOIN(SELECT artistId, SUM(songTotalPlayTime) AS totalPlayTime
                       FROM song_artist_map
@@ -208,11 +278,12 @@ interface DatabaseDao {
                                     ON song_artist_map.songId = e.songId
                       GROUP BY artistId
                       ORDER BY totalPlayTime DESC
-                      LIMIT :limit)
+                      LIMIT :limit
+                      OFFSET :offset)
                      ON artist.id = artistId
     """
     )
-    fun mostPlayedArtists(fromTimeStamp: Long, limit: Int = 6): Flow<List<Artist>>
+    fun mostPlayedArtists(fromTimeStamp: Long, limit: Int = 6, offset: Int = 0): Flow<List<Artist>>
 
     @Transaction
     @Query(
@@ -242,6 +313,35 @@ interface DatabaseDao {
     @Transaction
     @Query("SELECT * FROM song")
     fun allSongs(): Flow<List<Song>>
+
+    @Transaction
+    @Query(
+        """
+        SELECT DISTINCT artist.*,
+               (SELECT COUNT(1)
+                FROM song_artist_map
+                         JOIN event ON song_artist_map.songId = event.songId
+                WHERE artistId = artist.id) AS songCount
+        FROM artist
+                 LEFT JOIN(SELECT artistId, SUM(songTotalPlayTime) AS totalPlayTime
+                      FROM song_artist_map
+                               JOIN (SELECT songId, SUM(playTime) AS songTotalPlayTime
+                                     FROM event
+                                     GROUP BY songId) AS e
+                                    ON song_artist_map.songId = e.songId
+                      GROUP BY artistId
+                      ORDER BY totalPlayTime DESC) AS artistTotalPlayTime
+                     ON artist.id = artistId
+                     OR artist.bookmarkedAt IS NOT NULL
+                     ORDER BY 
+                      CASE 
+                        WHEN artistTotalPlayTime.artistId IS NULL THEN 1 
+                        ELSE 0 
+                      END, 
+                      artistTotalPlayTime.totalPlayTime DESC
+    """
+    )
+    fun allArtistsByPlayTime(): Flow<List<Artist>>
 
     @Query("SELECT * FROM format WHERE id = :id")
     fun format(id: String?): Flow<FormatEntity?>
@@ -457,6 +557,10 @@ interface DatabaseDao {
     fun playlistsByCreateDateAsc(): Flow<List<Playlist>>
 
     @Transaction
+    @Query("SELECT *, (SELECT COUNT(*) FROM playlist_song_map WHERE playlistId = playlist.id) AS songCount FROM playlist ORDER BY lastUpdateTime")
+    fun playlistsByUpdatedDateAsc(): Flow<List<Playlist>>
+
+    @Transaction
     @Query("SELECT *, (SELECT COUNT(*) FROM playlist_song_map WHERE playlistId = playlist.id) AS songCount FROM playlist ORDER BY name")
     fun playlistsByNameAsc(): Flow<List<Playlist>>
 
@@ -513,6 +617,8 @@ interface DatabaseDao {
     @Query("SELECT COUNT(1) FROM related_song_map WHERE songId = :songId LIMIT 1")
     fun hasRelatedSongs(songId: String): Boolean
 
+    @Query("SELECT song.* FROM (SELECT * from related_song_map GROUP BY relatedSongId) map JOIN song ON song.id = map.relatedSongId where songId = :songId")
+    fun getRelatedSongs(songId: String): Flow<List<Song>>
     @Query(
         """
         UPDATE playlist_song_map SET position = 

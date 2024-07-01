@@ -129,7 +129,7 @@ fun AboutScreen(
         Spacer(Modifier.height(4.dp))
 
         Text(
-            text = "by @MaloyBegonia",
+            text = "Ву @MaloyBegonia",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary
         )
@@ -137,6 +137,15 @@ fun AboutScreen(
         Spacer(Modifier.height(8.dp))
 
         Row {
+            IconButton(
+                onClick = { uriHandler.openUri("https://t.me/maloybegoniadev") }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.person),
+                    contentDescription = null
+                )
+            }
+
             IconButton(
                 onClick = { uriHandler.openUri("https://github.com/MaloyBegonia/Muzza") }
             ) {

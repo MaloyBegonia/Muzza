@@ -9,6 +9,7 @@ import com.maloy.innertube.models.Runs
 import com.maloy.innertube.models.SectionListRenderer
 import com.maloy.innertube.models.Tabs
 import com.maloy.innertube.models.ThumbnailRenderer
+import com.maloy.innertube.models.Thumbnails
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,11 +19,30 @@ data class BrowseResponse(
     val header: Header?,
     val microformat: Microformat?,
     val responseContext: ResponseContext,
+    val background: MusicThumbnailRenderer?
 ) {
     @Serializable
     data class Contents(
         val singleColumnBrowseResultsRenderer: Tabs?,
+        val twoColumnBrowseResultsRenderer: TwoColumnBrowseResultsRenderer?,
         val sectionListRenderer: SectionListRenderer?,
+    )
+
+    @Serializable
+    data class TwoColumnBrowseResultsRenderer(
+        val tabs: List<Tabs.Tab?>?,
+        val secondaryContents: SecondaryContents?,
+    )
+
+    @Serializable
+    data class SecondaryContents(
+        val sectionListRenderer: SectionListRenderer?
+    )
+
+    @Serializable
+    data class MusicThumbnailRenderer(
+        val thumbnail: Thumbnails?,
+        val thumbnailCrop: String?,
     )
 
     @Serializable
@@ -77,7 +97,8 @@ data class BrowseResponse(
         ) {
             @Serializable
             data class Header(
-                val musicDetailHeaderRenderer: MusicDetailHeaderRenderer,
+                val musicDetailHeaderRenderer: MusicDetailHeaderRenderer?,
+                val musicResponsiveHeaderRenderer: MusicHeaderRenderer?,
             )
         }
 
@@ -87,10 +108,31 @@ data class BrowseResponse(
             val foregroundThumbnail: ThumbnailRenderer,
             val thumbnail: ThumbnailRenderer?,
         )
+        @Serializable
+        data class Buttons(
+            val menuRenderer: Menu.MenuRenderer?,
+        )
 
         @Serializable
         data class MusicHeaderRenderer(
-            val title: Runs,
+            val buttons: List<Buttons>?,
+            val title: Runs?,
+            val thumbnail: MusicThumbnailRenderer?,
+            val subtitle: Runs?,
+            val secondSubtitle: Runs?,
+            val straplineTextOne: Runs?,
+            val straplineThumbnail: MusicThumbnailRenderer?
+        )
+
+        @Serializable
+        data class MusicThumbnail(
+            val url: String?
+        )
+
+        @Serializable
+        data class MusicThumbnailRenderer(
+            val musicThumbnailRenderer: BrowseResponse.MusicThumbnailRenderer,
+            val thumbnails: List<MusicThumbnail>?
         )
     }
 

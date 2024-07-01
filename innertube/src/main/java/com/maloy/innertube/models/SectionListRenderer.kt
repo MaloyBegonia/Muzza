@@ -1,5 +1,6 @@
 package com.maloy.innertube.models
 
+import com.maloy.innertube.models.response.BrowseResponse
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -44,5 +45,7 @@ data class SectionListRenderer(
         val musicPlaylistShelfRenderer: MusicPlaylistShelfRenderer?,
         val musicDescriptionShelfRenderer: MusicDescriptionShelfRenderer?,
         val gridRenderer: GridRenderer?,
+        val musicResponsiveHeaderRenderer: BrowseResponse.Header.MusicHeaderRenderer?,
+        val musicEditablePlaylistDetailHeaderRenderer: BrowseResponse.Header.MusicEditablePlaylistDetailHeaderRenderer?,
     )
 }
