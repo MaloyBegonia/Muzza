@@ -99,12 +99,20 @@ inline fun ListItem(
     noinline subtitle: (@Composable RowScope.() -> Unit)? = null,
     thumbnailContent: @Composable () -> Unit,
     trailingContent: @Composable RowScope.() -> Unit = {},
+    isActive: Boolean = false,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = if (isActive)
+            modifier
+                .height(ListItemHeight)
+                .padding(horizontal = 8.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+        else
+            modifier
             .height(ListItemHeight)
-            .padding(horizontal = 6.dp),
+            .padding(horizontal = 8.dp),
     ) {
         Box(
             modifier = Modifier.padding(6.dp),
@@ -144,6 +152,7 @@ fun ListItem(
     badges: @Composable RowScope.() -> Unit = {},
     thumbnailContent: @Composable () -> Unit,
     trailingContent: @Composable RowScope.() -> Unit = {},
+    isActive: Boolean = false
 ) = ListItem(
     title = title,
     subtitle = {
@@ -161,7 +170,8 @@ fun ListItem(
     },
     thumbnailContent = thumbnailContent,
     trailingContent = trailingContent,
-    modifier = modifier
+    modifier = modifier,
+    isActive = isActive
 )
 
 @Composable
@@ -324,7 +334,8 @@ fun SongListItem(
         }
     },
     trailingContent = trailingContent,
-    modifier = modifier
+    modifier = modifier,
+    isActive = isActive
 )
 
 @Composable
@@ -822,7 +833,8 @@ fun MediaMetadataListItem(
         )
     },
     trailingContent = trailingContent,
-    modifier = modifier
+    modifier = modifier,
+    isActive = isActive
 )
 
 @Composable
@@ -940,7 +952,8 @@ fun YouTubeListItem(
         }
     },
     trailingContent = trailingContent,
-    modifier = modifier
+    modifier = modifier,
+    isActive = isActive
 )
 
 @Composable
