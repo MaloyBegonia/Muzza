@@ -2,10 +2,14 @@ package com.maloy.muzza.lyrics
 
 import android.content.Context
 import com.maloy.lrclib.LrcLib
+import com.maloy.muzza.constants.EnableLrcLibKey
+import com.maloy.muzza.utils.dataStore
+import com.maloy.muzza.utils.get
 
 object LrcLibLyricsProvider : LyricsProvider {
     override val name = "LrcLib"
-    override fun isEnabled(context: Context) = true
+    override fun isEnabled(context: Context): Boolean =
+        context.dataStore[EnableLrcLibKey] ?: true
 
     override suspend fun getLyrics(id: String, title: String, artist: String, duration: Int): Result<String> =
         LrcLib.getLyrics(title, artist, duration)

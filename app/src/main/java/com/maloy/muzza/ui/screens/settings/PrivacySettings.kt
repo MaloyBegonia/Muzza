@@ -20,19 +20,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.maloy.muzza.LocalDatabase
 import com.maloy.muzza.LocalPlayerAwareWindowInsets
 import com.maloy.muzza.R
 import com.maloy.muzza.constants.EnableKugouKey
+import com.maloy.muzza.constants.EnableLrcLibKey
 import com.maloy.muzza.constants.PauseListenHistoryKey
 import com.maloy.muzza.constants.PauseSearchHistoryKey
+import com.maloy.muzza.constants.PreferredLyricsProvider
+import com.maloy.muzza.constants.PreferredLyricsProviderKey
 import com.maloy.muzza.ui.component.DefaultDialog
 import com.maloy.muzza.ui.component.IconButton
+import com.maloy.muzza.ui.component.ListPreference
 import com.maloy.muzza.ui.component.PreferenceEntry
 import com.maloy.muzza.ui.component.SwitchPreference
 import com.maloy.muzza.ui.utils.backToMain
+import com.maloy.muzza.utils.rememberEnumPreference
 import com.maloy.muzza.utils.rememberPreference
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +57,9 @@ fun PrivacySettings(
     var showClearListenHistoryDialog by remember {
         mutableStateOf(false)
     }
+
+    val (enableLrclib, onEnableLrclibChange) = rememberPreference(key = EnableLrcLibKey, defaultValue = true)
+    val (preferredProvider, onPreferredProviderChange) = rememberEnumPreference(key = PreferredLyricsProviderKey, defaultValue = PreferredLyricsProvider.LRCLIB)
 
     if (showClearListenHistoryDialog) {
         DefaultDialog(
@@ -148,6 +159,20 @@ fun PrivacySettings(
             icon = { Icon(painterResource(R.drawable.lyrics), null) },
             checked = enableKugou,
             onCheckedChange = onEnableKugouChange
+        )
+        SwitchPreference(
+            title = { Text(stringResource(R.string.enable_lrclib)) },
+            icon = { Icon(painterResource(R.drawable.lyrics), null) },
+            checked = enableLrclib,
+            onCheckedChange = onEnableLrclibChange
+        )
+
+        ListPreference(
+            title = { Text(stringResource(R.string.set_quick_picks)) },
+            selectedValue = preferredProvider,
+            values = listOf(PreferredLyricsProvider.KUGOU, PreferredLyricsProvider.LRCLIB),
+            valueText = { it.name.toLowerCase(Locale.current).capitalize(Locale.current) },
+            onValueSelected = onPreferredProviderChange
         )
     }
 

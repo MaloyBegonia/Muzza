@@ -287,4 +287,6 @@
     <string name="appwidget_text">I m a cat :)</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">This is an app widget description</string>
+    <string name="enable_lrclib">Enable LrcLib lyrics provider</string>
+    <string name="set_quick_picks">Set Quick Picks</string>
 </resources>

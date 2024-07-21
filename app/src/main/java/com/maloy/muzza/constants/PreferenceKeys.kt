@@ -16,6 +16,7 @@ val ContentCountryKey = stringPreferencesKey("contentCountry")
 val ProxyEnabledKey = booleanPreferencesKey("proxyEnabled")
 val ProxyUrlKey = stringPreferencesKey("proxyUrl")
 val ProxyTypeKey = stringPreferencesKey("proxyType")
+val EnableLrcLibKey = booleanPreferencesKey("enableLrclib")
 
 val AudioQualityKey = stringPreferencesKey("audioQuality")
 
@@ -53,6 +54,7 @@ val ArtistViewTypeKey = stringPreferencesKey("artistViewType")
 val AlbumFilterKey = stringPreferencesKey("albumFilter")
 val AlbumViewTypeKey = stringPreferencesKey("albumViewType")
 val PlaylistViewTypeKey = stringPreferencesKey("playlistViewType")
+val PreferredLyricsProviderKey = stringPreferencesKey("lyricsProvider")
 
 val PlaylistEditLockKey = booleanPreferencesKey("playlistEditLock")
 
@@ -63,6 +65,10 @@ enum class LibraryViewType {
         LIST -> GRID
         GRID -> LIST
     }
+}
+
+enum class PreferredLyricsProvider {
+    KUGOU, LRCLIB
 }
 
 enum class SongSortType {
