@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -57,8 +58,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun BottomSheet(
     state: BottomSheetState,
+    brushBackgroundColor: Brush,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
     onDismiss: (() -> Unit)? = null,
     collapsedContent: @Composable BoxScope.() -> Unit,
     content: @Composable BoxScope.() -> Unit,
@@ -97,7 +98,7 @@ fun BottomSheet(
                     topEnd = if (!state.isExpanded) 16.dp else 0.dp
                 )
             )
-            .background(backgroundColor)
+            .background(brushBackgroundColor)
     ) {
         if (!state.isCollapsed && !state.isDismissed) {
             BackHandler(onBack = state::collapseSoft)

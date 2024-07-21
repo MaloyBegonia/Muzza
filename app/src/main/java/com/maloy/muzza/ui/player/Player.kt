@@ -1,11 +1,14 @@
 package com.maloy.muzza.ui.player
 
 import android.content.res.Configuration
+import android.graphics.drawable.BitmapDrawable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +28,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Slider
@@ -43,6 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
@@ -58,8 +62,13 @@ import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.Player.STATE_ENDED
 import androidx.media3.common.Player.STATE_READY
 import androidx.navigation.NavController
+import androidx.compose.ui.platform.LocalContext
+import coil.ImageLoader
+import coil.request.ImageRequest
 import com.maloy.muzza.LocalPlayerConnection
 import com.maloy.muzza.R
+import com.maloy.muzza.constants.PlayerBackgroundStyle
+import com.maloy.muzza.constants.PlayerBackgroundStyleKey
 import com.maloy.muzza.constants.PlayerHorizontalPadding
 import com.maloy.muzza.constants.QueuePeekHeight
 import com.maloy.muzza.extensions.togglePlayPause
@@ -69,16 +78,22 @@ import com.maloy.muzza.ui.component.BottomSheet
 import com.maloy.muzza.ui.component.BottomSheetState
 import com.maloy.muzza.ui.component.ResizableIconButton
 import com.maloy.muzza.ui.component.rememberBottomSheetState
+import com.maloy.muzza.ui.theme.extractGradientColors
 import com.maloy.muzza.utils.makeTimeString
+import com.maloy.muzza.utils.rememberEnumPreference
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomSheetPlayer(
     state: BottomSheetState,
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     val playerConnection = LocalPlayerConnection.current ?: return
 
     val playbackState by playerConnection.playbackState.collectAsState()
@@ -90,6 +105,16 @@ fun BottomSheetPlayer(
     val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
     val canSkipNext by playerConnection.canSkipNext.collectAsState()
 
+    val playerBackground by rememberEnumPreference(key = PlayerBackgroundStyleKey, defaultValue = PlayerBackgroundStyle.DEFAULT)
+
+    val onBackgroundColor =
+        when (playerBackground) {
+            PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.onBackground
+            else -> MaterialTheme.colorScheme.onSurface
+        }
+
+
+
     var position by rememberSaveable(playbackState) {
         mutableStateOf(playerConnection.player.currentPosition)
     }
@@ -98,6 +123,34 @@ fun BottomSheetPlayer(
     }
     var sliderPosition by remember {
         mutableStateOf<Long?>(null)
+    }
+
+    var gradientColors by remember {
+        mutableStateOf<List<Color>>(emptyList())
+    }
+
+    LaunchedEffect(mediaMetadata, playerBackground) {
+        if (playerBackground == PlayerBackgroundStyle.GRADIENT) {
+            withContext(Dispatchers.IO) {
+                val result =
+                    (
+                            ImageLoader(context)
+                                .execute(
+                                    ImageRequest
+                                        .Builder(context)
+                                        .data(mediaMetadata?.thumbnailUrl)
+                                        .allowHardware(false)
+                                        .build(),
+                                ).drawable as? BitmapDrawable
+                            )?.bitmap?.extractGradientColors()
+
+                result?.let {
+                    gradientColors = it
+                }
+            }
+        } else {
+            gradientColors = emptyList()
+        }
     }
 
     LaunchedEffect(playbackState) {
@@ -117,8 +170,24 @@ fun BottomSheetPlayer(
 
     BottomSheet(
         state = state,
-        modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(NavigationBarDefaults.Elevation),
+        brushBackgroundColor =
+        if (gradientColors.size >=
+            2 &&
+            state.value > state.expandedBound / 3
+        ) {
+            Brush.verticalGradient(gradientColors)
+        } else {
+            Brush.verticalGradient(
+                listOf(
+                    MaterialTheme.colorScheme.surfaceColorAtElevation(
+                        NavigationBarDefaults.Elevation,
+                    ),
+                    MaterialTheme.colorScheme.surfaceColorAtElevation(
+                        NavigationBarDefaults.Elevation,
+                    ),
+                ),
+            )
+        },
         onDismiss = {
             playerConnection.player.stop()
             playerConnection.player.clearMediaItems()
@@ -137,45 +206,57 @@ fun BottomSheetPlayer(
                 label = "playPauseRoundness"
             )
 
-            Text(
-                text = mediaMetadata.title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(horizontal = PlayerHorizontalPadding)
-                    .clickable(enabled = mediaMetadata.album != null) {
-                        navController.navigate("album/${mediaMetadata.album!!.id}")
-                        state.collapseSoft()
-                    }
-            )
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = PlayerHorizontalPadding),
+            ) {
+                Text(
+                    text = mediaMetadata.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = onBackgroundColor,
+                    modifier =
+                    Modifier
+                        .basicMarquee()
+                        .clickable(enabled = mediaMetadata.album != null) {
+                            navController.navigate("album/${mediaMetadata.album!!.id}")
+                            state.collapseSoft()
+                        },
+                )
+            }
 
             Spacer(Modifier.height(6.dp))
 
             Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
+                horizontalArrangement = Arrangement.Start,
+                modifier =
+                Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = PlayerHorizontalPadding)
+                    .padding(horizontal = PlayerHorizontalPadding),
             ) {
                 mediaMetadata.artists.fastForEachIndexed { index, artist ->
                     Text(
                         text = artist.name,
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = onBackgroundColor,
                         maxLines = 1,
-                        modifier = Modifier.clickable(enabled = artist.id != null) {
+                        modifier =
+                        Modifier.clickable(enabled = artist.id != null) {
                             navController.navigate("artist/${artist.id}")
                             state.collapseSoft()
-                        }
+                        },
                     )
 
                     if (index != mediaMetadata.artists.lastIndex) {
                         Text(
                             text = ", ",
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.secondary
+                            color = onBackgroundColor,
                         )
                     }
                 }
@@ -371,7 +452,8 @@ fun BottomSheetPlayer(
         Queue(
             state = queueSheetState,
             playerBottomSheetState = state,
-            navController = navController
+            navController = navController,
+            backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(NavigationBarDefaults.Elevation),
         )
     }
 }

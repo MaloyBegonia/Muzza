@@ -58,6 +58,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -103,6 +104,7 @@ fun Queue(
     playerBottomSheetState: BottomSheetState,
     navController: NavController,
     modifier: Modifier = Modifier,
+    backgroundColor: androidx.compose.ui.graphics.Color,
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -263,7 +265,7 @@ fun Queue(
 
     BottomSheet(
         state = state,
-        backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(NavigationBarDefaults.Elevation),
+        brushBackgroundColor = Brush.verticalGradient(listOf(backgroundColor, backgroundColor)),
         modifier = modifier,
         collapsedContent = {
             Row(

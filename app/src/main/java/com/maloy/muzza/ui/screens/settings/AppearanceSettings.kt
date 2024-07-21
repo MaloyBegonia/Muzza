@@ -20,6 +20,8 @@ import com.maloy.muzza.constants.DarkModeKey
 import com.maloy.muzza.constants.DefaultOpenTabKey
 import com.maloy.muzza.constants.DynamicThemeKey
 import com.maloy.muzza.constants.LyricsTextPositionKey
+import com.maloy.muzza.constants.PlayerBackgroundStyle
+import com.maloy.muzza.constants.PlayerBackgroundStyleKey
 import com.maloy.muzza.constants.PureBlackKey
 import com.maloy.muzza.ui.component.EnumListPreference
 import com.maloy.muzza.ui.component.IconButton
@@ -39,6 +41,11 @@ fun AppearanceSettings(
     val (pureBlack, onPureBlackChange) = rememberPreference(PureBlackKey, defaultValue = false)
     val (defaultOpenTab, onDefaultOpenTabChange) = rememberEnumPreference(DefaultOpenTabKey, defaultValue = NavigationTab.HOME)
     val (lyricsPosition, onLyricsPositionChange) = rememberEnumPreference(LyricsTextPositionKey, defaultValue = LyricsPosition.CENTER)
+    val (playerBackground, onPlayerBackgroundChange) =
+        rememberEnumPreference(
+            PlayerBackgroundStyleKey,
+            defaultValue = PlayerBackgroundStyle.DEFAULT,
+        )
 
     Column(
         Modifier
@@ -84,6 +91,18 @@ fun AppearanceSettings(
                     NavigationTab.PLAYLIST -> stringResource(R.string.playlists)
                 }
             }
+        )
+        EnumListPreference(
+            title = { Text(stringResource(R.string.player_background_style)) },
+            icon = { Icon(painterResource(R.drawable.gradient), null) },
+            selectedValue = playerBackground,
+            onValueSelected = onPlayerBackgroundChange,
+            valueText = {
+                when (it) {
+                    PlayerBackgroundStyle.DEFAULT -> stringResource(R.string.follow_theme)
+                    PlayerBackgroundStyle.GRADIENT -> stringResource(R.string.gradient)
+                }
+            },
         )
         EnumListPreference(
             title = { Text(stringResource(R.string.lyrics_text_position)) },

@@ -113,6 +113,11 @@ enum class AlbumFilter {
     LIBRARY, LIKED
 }
 
+enum class PlayerBackgroundStyle {
+    DEFAULT,
+    GRADIENT,
+}
+
 val ShowLyricsKey = booleanPreferencesKey("showLyrics")
 val LyricsTextPositionKey = stringPreferencesKey("lyricsTextPosition")
 val TranslateLyricsKey = booleanPreferencesKey("translateLyrics")
@@ -126,6 +131,7 @@ enum class SearchSource {
     LOCAL, ONLINE
 }
 
+val PlayerBackgroundStyleKey = stringPreferencesKey("playerBackgroundStyle")
 val VisitorDataKey = stringPreferencesKey("visitorData")
 val InnerTubeCookieKey = stringPreferencesKey("innerTubeCookie")
 val AccountNameKey = stringPreferencesKey("accountName")
