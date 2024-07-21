@@ -17,11 +17,17 @@ val ProxyEnabledKey = booleanPreferencesKey("proxyEnabled")
 val ProxyUrlKey = stringPreferencesKey("proxyUrl")
 val ProxyTypeKey = stringPreferencesKey("proxyType")
 val EnableLrcLibKey = booleanPreferencesKey("enableLrclib")
+val QuickPicksKey = stringPreferencesKey("discover")
 
 val AudioQualityKey = stringPreferencesKey("audioQuality")
 
 enum class AudioQuality {
     AUTO, HIGH, LOW
+}
+
+enum class QuickPicks {
+    QUICK_PICKS,
+    LAST_LISTEN,
 }
 
 val PersistentQueueKey = booleanPreferencesKey("persistentQueue")
