@@ -14,4 +14,5 @@ rootProject.name = "Muzza"
 include(":app")
 include(":innertube")
 include(":kugou")
+include(":lrclib")
 include(":material-color-utilities")

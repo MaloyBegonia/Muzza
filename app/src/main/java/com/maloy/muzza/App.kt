@@ -10,7 +10,6 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import com.maloy.innertube.YouTube
 import com.maloy.innertube.models.YouTubeLocale
-import com.maloy.kugou.KuGou
 import com.maloy.muzza.constants.*
 import com.maloy.muzza.extensions.*
 import com.maloy.muzza.utils.dataStore
@@ -44,9 +43,6 @@ class App : Application(), ImageLoaderFactory {
                 ?: languageTag.takeIf { it in LanguageCodeToName }
                 ?: "en"
         )
-        if (languageTag == "zh-TW") {
-            KuGou.useTraditionalChinese = true
-        }
 
         if (dataStore[ProxyEnabledKey] == true) {
             try {
