@@ -64,14 +64,17 @@ import coil.request.ImageRequest
 import com.valentinilk.shimmer.LocalShimmerTheme
 import com.maloy.innertube.YouTube
 import com.maloy.innertube.models.SongItem
+import com.maloy.innertube.models.WatchEndpoint
 import com.maloy.muzza.constants.*
 import com.maloy.muzza.db.MusicDatabase
 import com.maloy.muzza.db.entities.SearchHistory
 import com.maloy.muzza.extensions.*
+import com.maloy.muzza.models.toMediaMetadata
 import com.maloy.muzza.playback.DownloadUtil
 import com.maloy.muzza.playback.MusicService
 import com.maloy.muzza.playback.MusicService.MusicBinder
 import com.maloy.muzza.playback.PlayerConnection
+import com.maloy.muzza.playback.queues.YouTubeQueue
 import com.maloy.muzza.ui.component.*
 import com.maloy.muzza.ui.component.shimmer.ShimmerTheme
 import com.maloy.muzza.ui.menu.YouTubeSongMenu
@@ -372,7 +375,7 @@ class MainActivity : ComponentActivity() {
                                         withContext(Dispatchers.IO) {
                                             YouTube.queue(listOf(videoId))
                                         }.onSuccess {
-                                            sharedSong = it.firstOrNull()
+                                            playerConnection?.playQueue(YouTubeQueue(WatchEndpoint(videoId = it.firstOrNull()?.id), it.firstOrNull()?.toMediaMetadata()))
                                         }.onFailure {
                                             reportException(it)
                                         }
