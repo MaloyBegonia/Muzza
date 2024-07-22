@@ -22,6 +22,18 @@
     <string name="quick_picks">Швидкий вибір</string>
     <string name="quick_picks_empty">Послухайте кілька пісень, щоб створити ваш швидкий вибір</string>
     <string name="new_release_albums">Нові релізи альбомів</string>
+    <string name="keep_listening">Продовжуйте слухати</string>
+    <string name="similar_to">Похожі на</string>
+    <string name="forgotten_favorites">Забуті любимі пісні</string>
+    <string name="your_ytb_playlists">Ваші плейлисти на YouTube</string>
+    <string name="enable_lrclib">Включити постачальника текстів LrcLib</string>
+    <string name="set_quick_picks">Встановити швидкий вибір</string>
+    <string name="player_background_style">Стиль фону плеєра</string>
+    <string name="follow_theme">Залежить від теми</string>
+    <string name="gradient">Градієнт</string>
+    <string name="liked">Подобатися</string>
+    <string name="offline">Не в мережі</string>
+
 
     <!-- History -->
     <string name="today">Сьогодні</string>
